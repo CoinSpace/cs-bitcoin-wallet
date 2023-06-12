@@ -48,7 +48,7 @@ describe('TxTransformer.js', () => {
   describe('transformTx', () => {
     it('incoming tx (pending)', async () => {
       accounts.set(addressTypes.P2WPKH, {
-        addresses: ['bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y'],
+        addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: [],
       });
       const txTransformer = new TxTransformer({ wallet, accounts, network });
@@ -67,7 +67,7 @@ describe('TxTransformer.js', () => {
 
     it('incoming tx (confirmed)', async () => {
       accounts.set(addressTypes.P2PKH, {
-        addresses: ['mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS'],
+        addresses: ['mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs'],
         changeAddresses: [],
       });
       const txTransformer = new TxTransformer({ wallet, accounts, network });
@@ -86,8 +86,8 @@ describe('TxTransformer.js', () => {
 
     it('outgoing tx (pending)', async () => {
       accounts.set(addressTypes.P2WPKH, {
-        addresses: ['bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y'],
-        changeAddresses: ['bcrt1q235eynnkmvv2j9kk653a09ttv8q59sf3xfftgj'],
+        addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
+        changeAddresses: ['bcrt1qq0a3kg4wr6tlw8vww0tnnz9sd94v9jxv7vz89m'],
       });
       const txTransformer = new TxTransformer({ wallet, accounts, network });
       const tx = txTransformer.transformTx(TRANSACTIONS[1]);
@@ -100,7 +100,7 @@ describe('TxTransformer.js', () => {
       assert.equal(tx.to, TRANSACTIONS[1].vout[0].scriptPubKey.addresses[0]);
       assert.equal(tx.changeAddress, TRANSACTIONS[1].vout[2].scriptPubKey.addresses[0]);
       assert.deepEqual(tx.inputs, [new Unspent({
-        address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y',
+        address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
         confirmations: 3,
         txId: '4d26c2492366cca617e3dde10b378a17cabaa0c9324ca764e21a1b88140ae001',
         type: addressTypes.P2WPKH,
@@ -126,7 +126,7 @@ describe('TxTransformer.js', () => {
           vout: 1,
         }),
         new Unspent({
-          address: 'bcrt1q235eynnkmvv2j9kk653a09ttv8q59sf3xfftgj',
+          address: 'bcrt1qq0a3kg4wr6tlw8vww0tnnz9sd94v9jxv7vz89m',
           confirmations: 0,
           txId: '2818460aebb077b4cb826477b8386b0096a65651e61f49127a0e7299ad01e001',
           type: addressTypes.P2WPKH,
@@ -138,7 +138,7 @@ describe('TxTransformer.js', () => {
 
     it('outgoing tx (pending, without change)', async () => {
       accounts.set(addressTypes.P2WPKH, {
-        addresses: ['bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y'],
+        addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: [],
       });
       const txTransformer = new TxTransformer({ wallet, accounts, network });
@@ -152,7 +152,7 @@ describe('TxTransformer.js', () => {
       assert.equal(tx.to, TRANSACTIONS[2].vout[0].scriptPubKey.addresses[0]);
       assert.equal(tx.changeAddress, undefined);
       assert.deepEqual(tx.inputs, [new Unspent({
-        address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y',
+        address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
         confirmations: 3,
         txId: '4d26c2492366cca617e3dde10b378a17cabaa0c9324ca764e21a1b88140ae001',
         type: addressTypes.P2WPKH,
@@ -205,7 +205,7 @@ describe('TxTransformer.js', () => {
         changeAddresses: [],
       });
       accounts.set(addressTypes.P2WPKH, {
-        addresses: ['bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y'],
+        addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: [],
       });
       const txTransformer = new TxTransformer({ wallet, accounts, network });
@@ -217,7 +217,7 @@ describe('TxTransformer.js', () => {
       assert.equal(tx.fee.value, 1000n);
       assert.equal(tx.amount.value, 0n);
       assert.equal(tx.to, TRANSACTIONS[4].vout[0].scriptPubKey.addresses[0]);
-      assert.equal(tx.changeAddress, 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y');
+      assert.equal(tx.changeAddress, 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp');
       assert.deepEqual(tx.inputs, []);
       assert.deepEqual(tx.outputs, []);
     });

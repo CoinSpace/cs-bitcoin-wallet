@@ -12,21 +12,21 @@ const RANDOM_SEED = Buffer.from('2b48a48a752f6c49772bf97205660411cd2163fe6ce2de1
 const RANDOM_SEED_PUB_KEY = {
   p2wpkh: {
     // eslint-disable-next-line max-len
-    xpub: 'tpubDD7dP2wkkbXZfyNoHrwEEATPHVbZqhbyKaSLVgbFrKdwQ9CnE9XwpWxHpFdw3B7GGTvsZskphyArNff7RisKNewAYXoRdJhWfCADDYRfqMr',
-    path: "m/84'/0'/0'",
+    xpub: 'tpubDDEcPY1jTWCnFcrJoBdQxst38MXPLZHZ3uttVbX8rNddzJrrUAhQAzmYfAsJxS85q5QRXnLmbMhZPDjjB1DvoCfMQWh5c6Sx2Liyw3Hsqr8',
+    path: "m/84'/1'/0'",
   },
   p2pkh: {
     // eslint-disable-next-line max-len
-    xpub: 'tpubDCfzmC9JSSpGBHtFk81HkVVqPpJatEZGcb4mURbc2HvRMoy7Nw45RTLvUKueKJTYyLUCSXR34y9tKoS1QcqBuekDVpUqPbfu3uauoZJ2BjP',
-    path: "m/44'/0'/0'",
+    xpub: 'tpubDDmETRUCfp7xTnk3Sw15ZVw1BRUFPKpHQTNeUuupEG42YW6fx7CwQjvh2SEwBcdqTMY2nGjRvZCUomP5yuBbZSXDFj3BoPPr4t1cpyD2Azr',
+    path: "m/44'/1'/0'",
   },
   p2sh: {
     // eslint-disable-next-line max-len
-    xpub: 'tpubDDD9SfQTSPxQVpTWKMhbhp45XhJ3RRQgQAmoy8NqpBtzRev6ifw4YPtE72egjJm51697a2rGx5ADFDBQRezNzKEen5KDdmhcxk5fzGAEv8u',
-    path: "m/49'/0'/0'",
+    xpub: 'tpubDCMx2SbjiwJmq4kpRWNde5ZFTiHdeKJbrBtv7PttFXYSoNBzxkRD9K6nLhb9mYdmhWtghNqVsAqYn5NaoLiCa2ognG3tYpa8Kc8qmjh2YjA',
+    path: "m/49'/1'/0'",
   },
 };
-const RANDOM_ADDRESS = 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y';
+const RANDOM_ADDRESS = 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp';
 
 const SECOND_ADDRESS_P2PKH = 'mtHcCKvxPXL6XLXQsvbZ9Cv7ShdAWz7eid';
 const SECOND_ADDRESS_P2SH = '2NERD15JAX3tMguSDEdpbU79JJR8rLKmQT1';
@@ -55,7 +55,7 @@ const defaultOptions = {
   crypto: bitcoinAtBitcoin,
   platform: bitcoinAtBitcoin,
   cache: { get() {}, set() {} },
-  settings: { get() {}, set() {} },
+  settings: {},
   txPerPage: 1,
   account: {
     request(...args) { console.log(args); },
@@ -109,7 +109,7 @@ describe('BitcoinWallet.js', () => {
       });
       await wallet.create(RANDOM_SEED);
       assert.equal(wallet.state, Wallet.STATE_INITIALIZED);
-      assert.equal(wallet.address, 'qp9s7ma5fvhyvvdgnm65dk6cfysl62ph8y06gwy2ts');
+      assert.equal(wallet.address, 'qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy');
     });
 
     it('should fails without seed', async () => {
@@ -142,7 +142,7 @@ describe('BitcoinWallet.js', () => {
       });
       await wallet.open({ data: RANDOM_SEED_PUB_KEY });
       assert.equal(wallet.state, Wallet.STATE_INITIALIZED);
-      assert.equal(wallet.address, 'qp9s7ma5fvhyvvdgnm65dk6cfysl62ph8y06gwy2ts');
+      assert.equal(wallet.address, 'qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy');
     });
 
     it('should fails without public key', async () => {
@@ -176,9 +176,9 @@ describe('BitcoinWallet.js', () => {
       storage.expects('set').once().withArgs('balance', '800000000');
       storage.expects('save').once();
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 5_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 2_0000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000_0000 },
       ]);
       assert.equal(wallet.state, Wallet.STATE_LOADED);
       assert.equal(wallet.balance.value, 8_0000_0000n);
@@ -213,24 +213,24 @@ describe('BitcoinWallet.js', () => {
   describe('getPrivateKey', () => {
     it('should export private key', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 5_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 2_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 1_0000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 1_0000_0000 },
       ]);
       const privateKey = wallet.getPrivateKey(RANDOM_SEED);
       assert.deepEqual(privateKey, [
         {
-          address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y',
-          privatekey: 'cTicftrUQrgmesq3abzRExAiFC1tnshTrBzJb3sqk96DAsabNSEX',
+          address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
+          privatekey: 'cU53ebmRGxqsPQyeqwtwfkxPZHhvPgYn9m6ayo4gHn58qCLceYc4',
         },
         {
-          address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM',
-          privatekey: 'cVz5bWiGpRGoQMmin6SCK7P1q8shnMmohmckGMs1Z9f95wEnijVs',
+          address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF',
+          privatekey: 'cSYyezSkPmga5wgs55cysf46hw9CgM21BxG1KuaUXFtojKUedgb6',
         },
         {
-          address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS',
-          privatekey: 'cSNimCrrBpoAsmMtwbwB4qnHmNPdPbkVTqA2TWc3ptyWRm7ixKyH',
+          address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs',
+          privatekey: 'cNEMofdJGocXjxG7zF3vqG1Gm4KHX8xwKwYvyeyQrZ4vBqXpjGwp',
         },
       ]);
     });
@@ -270,9 +270,9 @@ describe('BitcoinWallet.js', () => {
       let wallet;
       beforeEach(async () => {
         wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-          { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-          { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 5_0000_0000 },
-          { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 2_0000_0000, confirmations: 0 },
+          { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+          { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5_0000_0000 },
+          { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000_0000, confirmations: 0 },
         ]);
         await utils.loadFeeRates(wallet, defaultOptions);
 
@@ -336,9 +336,9 @@ describe('BitcoinWallet.js', () => {
   describe('estimateImport', () => {
     it('works', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 5_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 2_0000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000_0000 },
       ]);
       await utils.loadFeeRates(wallet, defaultOptions, { default: 10, fastest: 50 });
 
@@ -419,9 +419,9 @@ describe('BitcoinWallet.js', () => {
   describe('estimateMaxAmount', () => {
     it('works', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 5_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 2_0000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000_0000 },
       ]);
       await utils.loadFeeRates(wallet, defaultOptions);
 
@@ -455,7 +455,7 @@ describe('BitcoinWallet.js', () => {
 
     it('should return 0 for low balance', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 2000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 2000 },
       ]);
       await utils.loadFeeRates(wallet, defaultOptions);
 
@@ -473,9 +473,9 @@ describe('BitcoinWallet.js', () => {
   describe('estimateTransactionFee', () => {
     it('should estimate transaction fee', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 5_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 3_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 2_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 5_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 3_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000 },
       ]);
       await utils.loadFeeRates(wallet, defaultOptions);
 
@@ -508,9 +508,9 @@ describe('BitcoinWallet.js', () => {
   describe('createTransaction', () => {
     it('works', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 1_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 1_0000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 1_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 1_0000_0000 },
       ]);
 
       await utils.loadFeeRates(wallet, defaultOptions);
@@ -528,9 +528,9 @@ describe('BitcoinWallet.js', () => {
 
     it('works (csFee disabled)', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 1_0000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 1_0000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 1_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 1_0000_0000 },
       ]);
 
       await utils.loadFeeRates(wallet, defaultOptions);
@@ -547,9 +547,9 @@ describe('BitcoinWallet.js', () => {
 
     it('fee is equal estimated fee', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1_0000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 5000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 5000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 5000_0000 },
       ]);
 
       const amount = 1_5000_0000n;
@@ -575,9 +575,9 @@ describe('BitcoinWallet.js', () => {
 
     it('sends maxAmount', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
-        { address: 'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y', satoshis: 1000_0000 },
-        { address: '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM', satoshis: 2000_0000 },
-        { address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS', satoshis: 5000_0000 },
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 2000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 5000_0000 },
       ]);
 
       await utils.loadFeeRates(wallet, defaultOptions);
@@ -663,9 +663,9 @@ describe('BitcoinWallet.js', () => {
   describe('loadTransactions', () => {
     it('should load transactions', async () => {
       const unspentOptions = utils.txsToUnspentOptions(TRANSACTIONS, [
-        'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y',
-        '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM',
-        'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS',
+        'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
+        '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF',
+        'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs',
       ]);
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, unspentOptions);
 
@@ -690,10 +690,10 @@ describe('BitcoinWallet.js', () => {
     let txs;
     beforeEach(async () => {
       const unspentOptions = utils.txsToUnspentOptions(TRANSACTIONS, [
-        'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y',
-        'bcrt1q235eynnkmvv2j9kk653a09ttv8q59sf3xfftgj',
-        '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM',
-        'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS',
+        'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
+        'bcrt1qq0a3kg4wr6tlw8vww0tnnz9sd94v9jxv7vz89m',
+        '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF',
+        'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs',
       ]);
       wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, unspentOptions);
       const request = sinon.stub(defaultOptions.account, 'request');
@@ -733,10 +733,10 @@ describe('BitcoinWallet.js', () => {
     let txs;
     beforeEach(async () => {
       const unspentOptions = utils.txsToUnspentOptions(TRANSACTIONS, [
-        'bcrt1qkqn0vw3jqv0n607azc5zfa747339ee29nqad7y',
-        'bcrt1q235eynnkmvv2j9kk653a09ttv8q59sf3xfftgj',
-        '2N9PnGiU64KJpteuJZhZEwUcdTjeyLCtbrM',
-        'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS',
+        'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
+        'bcrt1qq0a3kg4wr6tlw8vww0tnnz9sd94v9jxv7vz89m',
+        '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF',
+        'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs',
       ]);
       wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, unspentOptions);
       const request = sinon.stub(defaultOptions.account, 'request');
@@ -785,10 +785,10 @@ describe('BitcoinWallet.js', () => {
         ...defaultOptions,
         crypto: bitcoinCashAtBitcoinCash,
       });
-      const response = await wallet.unalias('qp9s7ma5fvhyvvdgnm65dk6cfysl62ph8y06gwy2ts');
+      const response = await wallet.unalias('qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy');
       assert.ok(response);
-      assert.equal(response.alias, 'qp9s7ma5fvhyvvdgnm65dk6cfysl62ph8y06gwy2ts');
-      assert.equal(response.address, 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS');
+      assert.equal(response.alias, 'qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy');
+      assert.equal(response.address, 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs');
     });
 
     it('domain alias with CashAddr', async () => {
@@ -802,11 +802,11 @@ describe('BitcoinWallet.js', () => {
         url: 'api/v3/domain/address',
         params: { crypto: bitcoinCashAtBitcoinCash._id, domain: 'nick.crypto' },
         baseURL: 'web',
-      }).resolves({ address: 'qp9s7ma5fvhyvvdgnm65dk6cfysl62ph8y06gwy2ts' });
+      }).resolves({ address: 'qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy' });
       const response = await wallet.unalias('nick.crypto');
       assert.ok(response);
-      assert.equal(response.alias, 'nick.crypto (qp9s7ma5fvhyvvdgnm65dk6cfysl62ph8y06gwy2ts)');
-      assert.equal(response.address, 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS');
+      assert.equal(response.alias, 'nick.crypto (qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy)');
+      assert.equal(response.address, 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs');
     });
 
     it('domain alias with legacy BCH address', async () => {
@@ -820,11 +820,11 @@ describe('BitcoinWallet.js', () => {
         url: 'api/v3/domain/address',
         params: { crypto: bitcoinCashAtBitcoinCash._id, domain: 'nick.crypto' },
         baseURL: 'web',
-      }).resolves({ address: 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS' });
+      }).resolves({ address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs' });
       const response = await wallet.unalias('nick.crypto');
       assert.ok(response);
       assert.equal(response.alias, 'nick.crypto');
-      assert.equal(response.address, 'mnMqTye2zjQ1CE4RkCZQeaeAoaqCpEcBJS');
+      assert.equal(response.address, 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs');
     });
 
     it('not alias', async () => {
