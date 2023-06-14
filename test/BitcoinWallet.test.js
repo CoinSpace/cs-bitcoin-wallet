@@ -703,17 +703,20 @@ describe('BitcoinWallet.js', () => {
 
     it('works', async () => {
       const estimate = await wallet.estimateReplacement(txs[0]);
-      assert.equal(estimate.value, 548n);
+      assert.equal(estimate.percent, 0.5);
+      assert.equal(estimate.fee.value, 548n);
     });
 
     it('works for tx without change', async () => {
       const estimate = await wallet.estimateReplacement(txs[1]);
-      assert.equal(estimate.value, 2840n);
+      assert.equal(estimate.percent, 0.5);
+      assert.equal(estimate.fee.value, 2840n);
     });
 
     it('works for tx with small change', async () => {
       const estimate = await wallet.estimateReplacement(txs[2]);
-      assert.equal(estimate.value, 1880n);
+      assert.equal(estimate.percent, 0.5);
+      assert.equal(estimate.fee.value, 1880n);
     });
 
     it('throw error not enough funds', async () => {
