@@ -63,7 +63,6 @@ const defaultOptions = {
       getPrice() { return 27415.24; },
     },
   },
-  apiWeb: 'web',
   apiNode: 'node',
   storage: { get() {}, set() {}, save() {} },
   development: true,
@@ -774,7 +773,6 @@ describe('BitcoinWallet.js', () => {
         method: 'GET',
         url: 'api/v3/domain/address',
         params: { crypto: bitcoinAtBitcoin._id, domain: 'nick.crypto' },
-        baseURL: 'web',
       }).resolves({ address: SECOND_ADDRESS_P2WPKH });
 
       const response = await wallet.unalias('nick.crypto');
@@ -804,7 +802,6 @@ describe('BitcoinWallet.js', () => {
         method: 'GET',
         url: 'api/v3/domain/address',
         params: { crypto: bitcoinCashAtBitcoinCash._id, domain: 'nick.crypto' },
-        baseURL: 'web',
       }).resolves({ address: 'qpsmea0wn9ex38adldntrgn7yzhsug9m6urhumffzy' });
       const response = await wallet.unalias('nick.crypto');
       assert.ok(response);
@@ -822,7 +819,6 @@ describe('BitcoinWallet.js', () => {
         method: 'GET',
         url: 'api/v3/domain/address',
         params: { crypto: bitcoinCashAtBitcoinCash._id, domain: 'nick.crypto' },
-        baseURL: 'web',
       }).resolves({ address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs' });
       const response = await wallet.unalias('nick.crypto');
       assert.ok(response);
@@ -843,7 +839,6 @@ describe('BitcoinWallet.js', () => {
         method: 'GET',
         url: 'api/v3/domain/address',
         params: { crypto: bitcoinAtBitcoin._id, domain: 'nick.crypto' },
-        baseURL: 'web',
       }).rejects();
       const response = await wallet.unalias('nick.crypto');
       assert.equal(response, undefined);

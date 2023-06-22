@@ -30,7 +30,6 @@ const defaultOptions = {
       getPrice() { return 27415.24; },
     },
   },
-  apiWeb: 'web',
   apiNode: 'node',
   storage: { get() {}, set() {}, save() {} },
   development: true,

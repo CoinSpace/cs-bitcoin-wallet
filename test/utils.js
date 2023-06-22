@@ -79,7 +79,6 @@ function stubCsFee(request, cryptoId, csFee) {
     method: 'GET',
     url: 'api/v4/csfee',
     params: { crypto: cryptoId },
-    baseURL: 'web',
   }).resolves(csFee);
 }
 
@@ -116,7 +115,6 @@ async function loadFeeRates(wallet, options, feeRates = { default: 1 }) {
     method: 'GET',
     url: 'api/v3/fees',
     params: { crypto: options.crypto._id },
-    baseURL: 'web',
   }).resolves(Object.keys(feeRates).map((key) => {
     return {
       name: key,
