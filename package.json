@@ -6,6 +6,10 @@
   "license": "MIT",
   "type": "module",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./symbols": "./lib/symbols.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/CoinSpace/cs-bitcoin-wallet.git"

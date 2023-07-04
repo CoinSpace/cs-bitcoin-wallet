@@ -5,7 +5,6 @@ import fs from 'fs/promises';
 import TxTransformer from '../lib/TxTransformer.js';
 import Unspent from '../lib/Unspent.js';
 import Wallet from '../index.js';
-import addressTypes from '../lib/addressTypes.js';
 import networks from '../lib/networks.js';
 
 const network = networks.regtest.bitcoin;
@@ -46,7 +45,7 @@ describe('TxTransformer.js', () => {
 
   describe('transformTx', () => {
     it('incoming tx (pending)', async () => {
-      accounts.set(addressTypes.P2WPKH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2WPKH, {
         addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: [],
       });
@@ -65,7 +64,7 @@ describe('TxTransformer.js', () => {
     });
 
     it('incoming tx (confirmed)', async () => {
-      accounts.set(addressTypes.P2PKH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2PKH, {
         addresses: ['mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs'],
         changeAddresses: [],
       });
@@ -84,7 +83,7 @@ describe('TxTransformer.js', () => {
     });
 
     it('outgoing tx (pending)', async () => {
-      accounts.set(addressTypes.P2WPKH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2WPKH, {
         addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: ['bcrt1qq0a3kg4wr6tlw8vww0tnnz9sd94v9jxv7vz89m'],
       });
@@ -102,7 +101,7 @@ describe('TxTransformer.js', () => {
         address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
         confirmations: 3,
         txId: '4d26c2492366cca617e3dde10b378a17cabaa0c9324ca764e21a1b88140ae001',
-        type: addressTypes.P2WPKH,
+        type: Wallet.ADDRESS_TYPE_P2WPKH,
         value: 6_0000_1000n,
         vout: 1,
       })]);
@@ -111,7 +110,7 @@ describe('TxTransformer.js', () => {
           address: 'bcrt1qcgrm42khvjl829x0y43y0ua9w28srdksnhtte6',
           confirmations: 0,
           txId: '2818460aebb077b4cb826477b8386b0096a65651e61f49127a0e7299ad01e001',
-          type: addressTypes.P2WPKH,
+          type: Wallet.ADDRESS_TYPE_P2WPKH,
           value: 1_0000_0000n,
           vout: 0,
         }),
@@ -120,7 +119,7 @@ describe('TxTransformer.js', () => {
           confirmations: 0,
           csfee: true,
           txId: '2818460aebb077b4cb826477b8386b0096a65651e61f49127a0e7299ad01e001',
-          type: addressTypes.P2WPKH,
+          type: Wallet.ADDRESS_TYPE_P2WPKH,
           value: 2_0000_0000n,
           vout: 1,
         }),
@@ -128,7 +127,7 @@ describe('TxTransformer.js', () => {
           address: 'bcrt1qq0a3kg4wr6tlw8vww0tnnz9sd94v9jxv7vz89m',
           confirmations: 0,
           txId: '2818460aebb077b4cb826477b8386b0096a65651e61f49127a0e7299ad01e001',
-          type: addressTypes.P2WPKH,
+          type: Wallet.ADDRESS_TYPE_P2WPKH,
           value: 3_0000_0000n,
           vout: 2,
         }),
@@ -136,7 +135,7 @@ describe('TxTransformer.js', () => {
     });
 
     it('outgoing tx (pending, without change)', async () => {
-      accounts.set(addressTypes.P2WPKH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2WPKH, {
         addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: [],
       });
@@ -154,7 +153,7 @@ describe('TxTransformer.js', () => {
         address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
         confirmations: 3,
         txId: '4d26c2492366cca617e3dde10b378a17cabaa0c9324ca764e21a1b88140ae001',
-        type: addressTypes.P2WPKH,
+        type: Wallet.ADDRESS_TYPE_P2WPKH,
         value: 3_0000_1000n,
         vout: 1,
       })]);
@@ -163,7 +162,7 @@ describe('TxTransformer.js', () => {
           address: 'bcrt1qcgrm42khvjl829x0y43y0ua9w28srdksnhtte6',
           confirmations: 0,
           txId: '2818460aebb077b4cb826477b8386b0096a65651e61f49127a0e7299ad01e002',
-          type: addressTypes.P2WPKH,
+          type: Wallet.ADDRESS_TYPE_P2WPKH,
           value: 1_0000_0000n,
           vout: 0,
         }),
@@ -172,7 +171,7 @@ describe('TxTransformer.js', () => {
           confirmations: 0,
           csfee: true,
           txId: '2818460aebb077b4cb826477b8386b0096a65651e61f49127a0e7299ad01e002',
-          type: addressTypes.P2WPKH,
+          type: Wallet.ADDRESS_TYPE_P2WPKH,
           value: 2_0000_0000n,
           vout: 1,
         }),
@@ -180,7 +179,7 @@ describe('TxTransformer.js', () => {
     });
 
     it('outgoing tx (confirmed)', async () => {
-      accounts.set(addressTypes.P2SH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2SH, {
         addresses: ['2Muzvftcgz3nCAo6w6c3xKFkJchXvAP5CWe'],
         changeAddresses: [],
       });
@@ -199,11 +198,11 @@ describe('TxTransformer.js', () => {
     });
 
     it('outgoing tx to yourself', async () => {
-      accounts.set(addressTypes.P2SH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2SH, {
         addresses: ['2Muzvftcgz3nCAo6w6c3xKFkJchXvAP5CWe', '2NAsb4KfP2RKJwwwq9Wqyqyhye8LQri6E5t'],
         changeAddresses: [],
       });
-      accounts.set(addressTypes.P2WPKH, {
+      accounts.set(Wallet.ADDRESS_TYPE_P2WPKH, {
         addresses: ['bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp'],
         changeAddresses: [],
       });

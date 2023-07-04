@@ -4,7 +4,6 @@ import fs from 'fs/promises';
 import sinon from 'sinon';
 
 import Wallet from '../index.js';
-import feeRates from '../lib/feeRates.js';
 import utils from './utils.js';
 
 // eslint-disable-next-line max-len
@@ -281,7 +280,7 @@ describe('BitcoinWallet.js', () => {
 
       it('should be valid amount', async () => {
         const valid = await wallet.validateAmount({
-          feeRate: feeRates.DEFAULT,
+          feeRate: Wallet.FEE_RATE_DEFAULT,
           address: SECOND_ADDRESS_P2WPKH,
           amount: new Amount(2_0000_0000n, wallet.crypto.decimals),
         });
@@ -291,7 +290,7 @@ describe('BitcoinWallet.js', () => {
       it('throw on small amount', async () => {
         await assert.rejects(async () => {
           await wallet.validateAmount({
-            feeRate: feeRates.DEFAULT,
+            feeRate: Wallet.FEE_RATE_DEFAULT,
             address: SECOND_ADDRESS_P2WPKH,
             amount: new Amount(0n, wallet.crypto.decimals),
           });
@@ -305,7 +304,7 @@ describe('BitcoinWallet.js', () => {
       it('throw on big amount', async () => {
         await assert.rejects(async () => {
           await wallet.validateAmount({
-            feeRate: feeRates.DEFAULT,
+            feeRate: Wallet.FEE_RATE_DEFAULT,
             address: SECOND_ADDRESS_P2WPKH,
             amount: new Amount(20_0000_0000n, wallet.crypto.decimals),
           });
@@ -319,7 +318,7 @@ describe('BitcoinWallet.js', () => {
       it('throw on big amount (unconfirmed)', async () => {
         await assert.rejects(async () => {
           await wallet.validateAmount({
-            feeRate: feeRates.DEFAULT,
+            feeRate: Wallet.FEE_RATE_DEFAULT,
             address: SECOND_ADDRESS_P2WPKH,
             amount: new Amount(7_0000_0000n, wallet.crypto.decimals),
           });
@@ -353,14 +352,14 @@ describe('BitcoinWallet.js', () => {
 
       estimation = await wallet.estimateImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(estimation.fee.value, 37_0481n);
       assert.equal(estimation.amount.value, 3_0000_0000n);
 
       estimation = await wallet.estimateImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
-        feeRate: feeRates.FASTEST,
+        feeRate: Wallet.FEE_RATE_FASTEST,
       });
       assert.equal(estimation.fee.value, 38_5681n);
       assert.equal(estimation.amount.value, 3_0000_0000n);
@@ -378,7 +377,7 @@ describe('BitcoinWallet.js', () => {
 
       const estimation = await wallet.estimateImport({
         privateKey: '91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx', // uncompressed
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(estimation.fee.value, 36_6933n);
       assert.equal(estimation.amount.value, 1_0000_0000n);
@@ -390,7 +389,7 @@ describe('BitcoinWallet.js', () => {
       await assert.rejects(async () => {
         await wallet.estimateImport({
           privateKey: '123',
-          feeRate: feeRates.DEFAULT,
+          feeRate: Wallet.FEE_RATE_DEFAULT,
         });
       }, {
         name: 'InvalidPrivateKeyError',
@@ -406,7 +405,7 @@ describe('BitcoinWallet.js', () => {
       await assert.rejects(async () => {
         await wallet.estimateImport({
           privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
-          feeRate: feeRates.DEFAULT,
+          feeRate: Wallet.FEE_RATE_DEFAULT,
         });
       }, {
         name: 'SmallAmountError',
@@ -429,25 +428,25 @@ describe('BitcoinWallet.js', () => {
 
       let maxAmount = await wallet.estimateMaxAmount({
         address: SECOND_ADDRESS_P2PKH,
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(maxAmount.value, 7_9963_2936n);
 
       maxAmount = await wallet.estimateMaxAmount({
         address: SECOND_ADDRESS_P2SH,
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(maxAmount.value, 7_9963_2938n);
 
       maxAmount = await wallet.estimateMaxAmount({
         address: SECOND_ADDRESS_P2WPKH,
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(maxAmount.value, 7_9963_2939n);
 
       maxAmount = await wallet.estimateMaxAmount({
         address: SECOND_ADDRESS_P2WSH,
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(maxAmount.value, 7_9963_2927n);
     });
@@ -463,7 +462,7 @@ describe('BitcoinWallet.js', () => {
 
       const maxAmount = await wallet.estimateMaxAmount({
         address: SECOND_ADDRESS_P2PKH,
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(maxAmount.value, 0n);
     });
@@ -484,21 +483,21 @@ describe('BitcoinWallet.js', () => {
       let fee = await wallet.estimateTransactionFee({
         address: SECOND_ADDRESS_P2PKH,
         amount: new Amount(1_0000n, wallet.crypto.decimals),
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(fee.value, 3189n);
 
       fee = await wallet.estimateTransactionFee({
         address: SECOND_ADDRESS_P2PKH,
         amount: new Amount(6_0000n, wallet.crypto.decimals),
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(fee.value, 3280n);
 
       fee = await wallet.estimateTransactionFee({
         address: SECOND_ADDRESS_P2PKH,
         amount: new Amount(9_6603n, wallet.crypto.decimals), // max amount
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
       assert.equal(fee.value, 3397n);
     });
@@ -517,7 +516,7 @@ describe('BitcoinWallet.js', () => {
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
 
       await wallet.createTransaction({
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(2_5000_0000, wallet.crypto.decimals),
       }, RANDOM_SEED);
@@ -536,7 +535,7 @@ describe('BitcoinWallet.js', () => {
       sinon.stub(defaultOptions.account, 'request');
 
       await wallet.createTransaction({
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(2_5000_0000, wallet.crypto.decimals),
       }, RANDOM_SEED);
@@ -558,13 +557,13 @@ describe('BitcoinWallet.js', () => {
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
 
       const estimate = await wallet.estimateTransactionFee({
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(amount, wallet.crypto.decimals),
       });
 
       await wallet.createTransaction({
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(amount, wallet.crypto.decimals),
       }, RANDOM_SEED);
@@ -584,12 +583,12 @@ describe('BitcoinWallet.js', () => {
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
 
       const maxAmount = await wallet.estimateMaxAmount({
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
       });
 
       await wallet.createTransaction({
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(maxAmount.value, wallet.crypto.decimals),
       }, RANDOM_SEED);
@@ -621,12 +620,12 @@ describe('BitcoinWallet.js', () => {
 
       const estimate = await wallet.estimateImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       await wallet.createImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       assert.equal(wallet.balance.value, estimate.amount.value - estimate.fee.value);
@@ -646,12 +645,12 @@ describe('BitcoinWallet.js', () => {
 
       const estimate = await wallet.estimateImport({
         privateKey: '91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx',
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       await wallet.createImport({
         privateKey: '91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx',
-        feeRate: feeRates.DEFAULT,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       assert.equal(wallet.balance.value, estimate.amount.value - estimate.fee.value);
