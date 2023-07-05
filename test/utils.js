@@ -113,7 +113,7 @@ async function loadFeeRates(wallet, options, feeRates = { default: 1 }) {
   request.withArgs({
     seed: 'device',
     method: 'GET',
-    url: 'api/v3/fees',
+    url: 'api/v4/fees',
     params: { crypto: options.crypto._id },
   }).resolves(Object.keys(feeRates).map((key) => {
     return {
