@@ -1,7 +1,7 @@
-import { Amount } from '@coinspace/cs-common';
 import assert from 'assert/strict';
 import fs from 'fs/promises';
 import sinon from 'sinon';
+import { Amount, Transaction } from '@coinspace/cs-common';
 
 import Wallet from '../index.js';
 import utils from './utils.js';
@@ -655,6 +655,48 @@ describe('BitcoinWallet.js', () => {
 
       assert.equal(wallet.balance.value, estimate.amount.value - estimate.fee.value);
       assert.equal(wallet.balance.value, 9963_3067n);
+    });
+  });
+
+  describe('loadTransaction', () => {
+    it('should load transaction', async () => {
+      const unspentOptions = utils.txsToUnspentOptions(TRANSACTIONS, [
+        'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
+        '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF',
+        'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs',
+      ]);
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, unspentOptions);
+
+      const request = sinon.stub(defaultOptions.account, 'request');
+      utils.stubTxs(request, [TRANSACTIONS[1]]);
+      const tx = await wallet.loadTransaction(TRANSACTIONS[1].txid);
+      assert.equal(tx.status, Transaction.STATUS_PENDING);
+      assert.equal(tx.incoming, false);
+      assert.equal(tx.rbf, true);
+      assert.equal(tx.fee.value, 2_0000_1000n);
+      assert.equal(tx.amount.value, 4_0000_0000n);
+    });
+
+    it('should load transaction (preloaded)', async () => {
+      const unspentOptions = utils.txsToUnspentOptions(TRANSACTIONS, [
+        'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp',
+        '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF',
+        'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs',
+      ]);
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, unspentOptions);
+
+      const request = sinon.stub(defaultOptions.account, 'request');
+      utils.stubTxs(request, TRANSACTIONS);
+      await utils.loadAllTxs(wallet);
+
+      sinon.restore();
+
+      const tx = await wallet.loadTransaction(TRANSACTIONS[1].txid);
+      assert.equal(tx.status, Transaction.STATUS_PENDING);
+      assert.equal(tx.incoming, false);
+      assert.equal(tx.rbf, true);
+      assert.equal(tx.fee.value, 2_0000_1000n);
+      assert.equal(tx.amount.value, 4_0000_0000n);
     });
   });
 
