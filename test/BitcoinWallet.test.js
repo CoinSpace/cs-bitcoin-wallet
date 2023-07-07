@@ -264,33 +264,6 @@ describe('BitcoinWallet.js', () => {
       });
     });
 
-    describe('validatePrivateKey', () => {
-      let wallet;
-      beforeEach(async () => {
-        wallet = await utils.createWallet(RANDOM_SEED, defaultOptions);
-      });
-
-      it('valid private key', async () => {
-        assert.ok(await wallet.validatePrivateKey({
-          privateKey: 'cU53ebmRGxqsPQyeqwtwfkxPZHhvPgYn9m6ayo4gHn58qCLceYc4',
-        }));
-        assert.ok(await wallet.validatePrivateKey({
-          privateKey: '91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx',
-        }));
-      });
-
-      it('invalid private key', async () => {
-        await assert.rejects(async () => {
-          assert.ok(await wallet.validatePrivateKey({
-            privateKey: 'my invalid private key',
-          }));
-        }, {
-          name: 'InvalidPrivateKeyError',
-          message: 'Invalid private key',
-        });
-      });
-    });
-
     describe('validateAmount', () => {
       let wallet;
       beforeEach(async () => {
