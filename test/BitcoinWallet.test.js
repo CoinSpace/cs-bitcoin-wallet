@@ -348,21 +348,19 @@ describe('BitcoinWallet.js', () => {
       ]);
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
 
-      let estimation;
+      let amount;
 
-      estimation = await wallet.estimateImport({
+      amount = await wallet.estimateImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
-      assert.equal(estimation.fee.value, 37_0481n);
-      assert.equal(estimation.amount.value, 3_0000_0000n);
+      assert.equal(amount.value, 2_9962_9519n);
 
-      estimation = await wallet.estimateImport({
+      amount = await wallet.estimateImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
         feeRate: Wallet.FEE_RATE_FASTEST,
       });
-      assert.equal(estimation.fee.value, 38_5681n);
-      assert.equal(estimation.amount.value, 3_0000_0000n);
+      assert.equal(amount.value, 2_9961_4319n);
     });
 
     it('works (uncompressed public key)', async () => {
@@ -379,8 +377,7 @@ describe('BitcoinWallet.js', () => {
         privateKey: '91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx', // uncompressed
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
-      assert.equal(estimation.fee.value, 36_6933n);
-      assert.equal(estimation.amount.value, 1_0000_0000n);
+      assert.equal(estimation.value, 9963_3067n);
     });
 
     it('throw error on invalid private key', async () => {
@@ -628,7 +625,7 @@ describe('BitcoinWallet.js', () => {
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
-      assert.equal(wallet.balance.value, estimate.amount.value - estimate.fee.value);
+      assert.equal(wallet.balance.value, estimate.value);
       assert.equal(wallet.balance.value, 2_9963_2939n);
     });
 
@@ -653,7 +650,7 @@ describe('BitcoinWallet.js', () => {
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
-      assert.equal(wallet.balance.value, estimate.amount.value - estimate.fee.value);
+      assert.equal(wallet.balance.value, estimate.value);
       assert.equal(wallet.balance.value, 9963_3067n);
     });
   });
