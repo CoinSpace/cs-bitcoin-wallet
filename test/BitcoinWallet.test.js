@@ -182,6 +182,18 @@ describe('BitcoinWallet.js', () => {
       assert.equal(wallet.balance.value, 8_0000_0000n);
       storage.verify();
     });
+
+    it('should set STATE_ERROR on error', async () => {
+      const wallet = new Wallet({
+        ...defaultOptions,
+      });
+      await wallet.create(RANDOM_SEED);
+      sinon.stub(defaultOptions.account, 'request');
+      await assert.rejects(async () => {
+        await wallet.load();
+      });
+      assert.equal(wallet.state, Wallet.STATE_ERROR);
+    });
   });
 
   describe('getPublicKey', () => {
