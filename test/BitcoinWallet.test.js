@@ -510,6 +510,47 @@ describe('BitcoinWallet.js', () => {
       });
       assert.equal(fee.value, 3397n);
     });
+
+    it('should estimate transaction fee (small change)', async () => {
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 5_0000 },
+      ]);
+      await utils.loadFeeRates(wallet, defaultOptions);
+
+      const request = sinon.stub(defaultOptions.account, 'request');
+      utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+
+      const fee = await wallet.estimateTransactionFee({
+        address: SECOND_ADDRESS_P2PKH,
+        amount: new Amount(46206n, wallet.crypto.decimals),
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+      });
+      assert.equal(fee.value, 3189n);
+    });
+
+    it('should estimate transaction fee (low price)', async () => {
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 20_0000_0000 },
+      ]);
+      await utils.loadFeeRates(wallet, defaultOptions);
+
+      const request = sinon.stub(defaultOptions.account, 'request');
+      utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+
+      sinon.stub(defaultOptions.account.market, 'getPrice').returns(100);
+
+      const maxAmount = await wallet.estimateMaxAmount({
+        address: SECOND_ADDRESS_P2WPKH,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+      });
+
+      const fee = await wallet.estimateTransactionFee({
+        address: SECOND_ADDRESS_P2WPKH,
+        amount: new Amount(maxAmount.value, wallet.crypto.decimals),
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+      });
+      assert.equal(fee.value + maxAmount.value, wallet.balance.value);
+    });
   });
 
   describe('createTransaction', () => {
@@ -596,6 +637,36 @@ describe('BitcoinWallet.js', () => {
         address: SECOND_ADDRESS_P2WPKH,
       });
 
+      await wallet.createTransaction({
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        address: SECOND_ADDRESS_P2WPKH,
+        amount: new Amount(maxAmount.value, wallet.crypto.decimals),
+      }, RANDOM_SEED);
+
+      assert.equal(wallet.balance.value, 0n);
+    });
+
+    it('sends maxAmount (low price)', async () => {
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 20_0000_0000 },
+      ]);
+
+      await utils.loadFeeRates(wallet, defaultOptions);
+      const request = sinon.stub(defaultOptions.account, 'request');
+      utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+      sinon.stub(defaultOptions.account.market, 'getPrice').returns(100);
+
+      const maxAmount = await wallet.estimateMaxAmount({
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        address: SECOND_ADDRESS_P2WPKH,
+      });
+
+      const fee = await wallet.estimateTransactionFee({
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        address: SECOND_ADDRESS_P2WPKH,
+        amount: new Amount(maxAmount.value, wallet.crypto.decimals),
+      });
+      assert.equal(maxAmount.value + fee.value, wallet.balance.value);
       await wallet.createTransaction({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
