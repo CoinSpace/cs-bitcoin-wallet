@@ -712,6 +712,40 @@ describe('BitcoinWallet.js', () => {
       assert.equal(wallet.balance.value, 2_9963_2939n);
     });
 
+    it('works (bitcoin-cash)', async () => {
+      const options = {
+        ...defaultOptions,
+        crypto: bitcoinCashAtBitcoinCash,
+      };
+      const wallet = await utils.createWallet(RANDOM_SEED, options, []);
+      await utils.loadFeeRates(wallet, options);
+      const request = sinon.stub(options.account, 'request');
+      utils.stubUnspents(request, [
+        { address: 'mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r', satoshis: 1_0000_0000 },
+        { address: 'mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r', satoshis: 1_0000_0000 },
+        { address: 'mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r', satoshis: 1_0000_0000 },
+      ]);
+      utils.stubCsFee(request, bitcoinCashAtBitcoinCash._id, {
+        ...CS_FEE,
+        address: 'mv1jSdXSnrVN1dt5hfQXxtgSEpiHFiLfjx',
+      });
+
+      assert.equal(wallet.balance.value, 0n);
+
+      const estimate = await wallet.estimateImport({
+        privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+      });
+
+      await wallet.createImport({
+        privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+      });
+
+      assert.equal(wallet.balance.value, estimate.value);
+      assert.equal(wallet.balance.value, 2_9963_2797n);
+    });
+
     it('works (uncompressed public key)', async () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, []);
       await utils.loadFeeRates(wallet, defaultOptions);
