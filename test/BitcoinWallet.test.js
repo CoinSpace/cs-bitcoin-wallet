@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import sinon from 'sinon';
 import { Amount, Transaction } from '@coinspace/cs-common';
 
-import Wallet from '../index.js';
+import Wallet from '@coinspace/cs-bitcoin-wallet';
 import utils from './utils.js';
 
 // eslint-disable-next-line max-len
