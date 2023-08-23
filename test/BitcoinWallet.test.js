@@ -154,6 +154,16 @@ describe('BitcoinWallet.js', () => {
         message: 'publicKey must be an instance of Object with data property',
       });
     });
+
+    it('should set STATE_NEED_INITIALIZATION for wrong public key', async () => {
+      const wallet = new Wallet({
+        ...defaultOptions,
+      });
+      const publicKey = JSON.parse(JSON.stringify(RANDOM_SEED_PUB_KEY));
+      publicKey.p2wpkh.path = "m/44'/1'/1'";
+      await wallet.open({ data: publicKey });
+      assert.equal(wallet.state, Wallet.STATE_NEED_INITIALIZATION);
+    });
   });
 
   describe('storage', () => {
