@@ -82,6 +82,16 @@ function stubCsFee(request, cryptoId, csFee) {
   }).resolves(csFee);
 }
 
+function stubSendTx(request, txId = '123456') {
+  request.withArgs({
+    seed: 'device',
+    method: 'POST',
+    url: 'api/v1/tx/send',
+    baseURL: 'node',
+    data: sinon.match.any,
+  }).resolves({ txId });
+}
+
 function stubTxs(request, txs) {
   const regexConfirmations = new RegExp('api/v1/txs/([\\w,]+)/confirmations$');
   request.withArgs(sinon.match((value) => {
@@ -170,6 +180,7 @@ export default {
   createWallet,
   stubUnspents,
   stubCsFee,
+  stubSendTx,
   stubTxs,
   loadFeeRates,
   txsToUnspentOptions,

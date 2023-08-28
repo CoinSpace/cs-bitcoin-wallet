@@ -574,14 +574,16 @@ describe('BitcoinWallet.js', () => {
       await utils.loadFeeRates(wallet, defaultOptions);
       const request = sinon.stub(defaultOptions.account, 'request');
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(request);
 
-      await wallet.createTransaction({
+      const id = await wallet.createTransaction({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(2_5000_0000, wallet.crypto.decimals),
       }, RANDOM_SEED);
 
       assert.equal(wallet.balance.value, 4963_2908n);
+      assert.equal(id, '123456');
     });
 
     it('works (csFee disabled)', async () => {
@@ -592,15 +594,17 @@ describe('BitcoinWallet.js', () => {
       ]);
 
       await utils.loadFeeRates(wallet, defaultOptions);
-      sinon.stub(defaultOptions.account, 'request');
+      const request = sinon.stub(defaultOptions.account, 'request');
+      utils.stubSendTx(request);
 
-      await wallet.createTransaction({
+      const id = await wallet.createTransaction({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(2_5000_0000, wallet.crypto.decimals),
       }, RANDOM_SEED);
 
       assert.equal(wallet.balance.value, 4999_9620n);
+      assert.equal(id, '123456');
     });
 
     it('fee is equal estimated fee', async () => {
@@ -615,6 +619,7 @@ describe('BitcoinWallet.js', () => {
       await utils.loadFeeRates(wallet, defaultOptions);
       const request = sinon.stub(defaultOptions.account, 'request');
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(request);
 
       const estimate = await wallet.estimateTransactionFee({
         feeRate: Wallet.FEE_RATE_DEFAULT,
@@ -622,13 +627,14 @@ describe('BitcoinWallet.js', () => {
         amount: new Amount(amount, wallet.crypto.decimals),
       });
 
-      await wallet.createTransaction({
+      const id = await wallet.createTransaction({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(amount, wallet.crypto.decimals),
       }, RANDOM_SEED);
 
       assert.equal(wallet.balance.value, 2_0000_0000n - amount - estimate.value);
+      assert.equal(id, '123456');
     });
 
     it('sends maxAmount', async () => {
@@ -641,19 +647,21 @@ describe('BitcoinWallet.js', () => {
       await utils.loadFeeRates(wallet, defaultOptions);
       const request = sinon.stub(defaultOptions.account, 'request');
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(request);
 
       const maxAmount = await wallet.estimateMaxAmount({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
       });
 
-      await wallet.createTransaction({
+      const id = await wallet.createTransaction({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(maxAmount.value, wallet.crypto.decimals),
       }, RANDOM_SEED);
 
       assert.equal(wallet.balance.value, 0n);
+      assert.equal(id, '123456');
     });
 
     it('sends maxAmount (low price)', async () => {
@@ -665,6 +673,7 @@ describe('BitcoinWallet.js', () => {
       const request = sinon.stub(defaultOptions.account, 'request');
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
       sinon.stub(defaultOptions.account.market, 'getPrice').returns(100);
+      utils.stubSendTx(request);
 
       const maxAmount = await wallet.estimateMaxAmount({
         feeRate: Wallet.FEE_RATE_DEFAULT,
@@ -677,13 +686,14 @@ describe('BitcoinWallet.js', () => {
         amount: new Amount(maxAmount.value, wallet.crypto.decimals),
       });
       assert.equal(maxAmount.value + fee.value, wallet.balance.value);
-      await wallet.createTransaction({
+      const id = await wallet.createTransaction({
         feeRate: Wallet.FEE_RATE_DEFAULT,
         address: SECOND_ADDRESS_P2WPKH,
         amount: new Amount(maxAmount.value, wallet.crypto.decimals),
       }, RANDOM_SEED);
 
       assert.equal(wallet.balance.value, 0n);
+      assert.equal(id, '123456');
     });
   });
 
@@ -705,6 +715,7 @@ describe('BitcoinWallet.js', () => {
         { address: 'mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r', satoshis: 1_0000_0000 },
       ]);
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(request);
 
       assert.equal(wallet.balance.value, 0n);
 
@@ -713,13 +724,14 @@ describe('BitcoinWallet.js', () => {
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
-      await wallet.createImport({
+      const id = await wallet.createImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       assert.equal(wallet.balance.value, estimate.value);
       assert.equal(wallet.balance.value, 2_9963_2939n);
+      assert.equal(id, '123456');
     });
 
     it('works (bitcoin-cash)', async () => {
@@ -739,6 +751,7 @@ describe('BitcoinWallet.js', () => {
         ...CS_FEE,
         address: 'mv1jSdXSnrVN1dt5hfQXxtgSEpiHFiLfjx',
       });
+      utils.stubSendTx(request);
 
       assert.equal(wallet.balance.value, 0n);
 
@@ -747,13 +760,14 @@ describe('BitcoinWallet.js', () => {
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
-      await wallet.createImport({
+      const id = await wallet.createImport({
         privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       assert.equal(wallet.balance.value, estimate.value);
       assert.equal(wallet.balance.value, 2_9963_2797n);
+      assert.equal(id, '123456');
     });
 
     it('works (uncompressed public key)', async () => {
@@ -764,6 +778,7 @@ describe('BitcoinWallet.js', () => {
         { address: 'mtoKs9V381UAhUia3d7Vb9GNak8Qvmcsme', satoshis: 1_0000_0000 },
       ]);
       utils.stubCsFee(request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(request);
 
       assert.equal(wallet.balance.value, 0n);
 
@@ -772,13 +787,14 @@ describe('BitcoinWallet.js', () => {
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
-      await wallet.createImport({
+      const id = await wallet.createImport({
         privateKey: '91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx',
         feeRate: Wallet.FEE_RATE_DEFAULT,
       });
 
       assert.equal(wallet.balance.value, estimate.value);
       assert.equal(wallet.balance.value, 9963_3067n);
+      assert.equal(id, '123456');
     });
   });
 
@@ -908,25 +924,28 @@ describe('BitcoinWallet.js', () => {
       wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, unspentOptions);
       const request = sinon.stub(defaultOptions.account, 'request');
       utils.stubTxs(request, TRANSACTIONS);
+      utils.stubSendTx(request);
       txs = await utils.loadAllTxs(wallet);
     });
 
     it('replace tx', async () => {
       const tx = txs[0];
       const before = wallet.balance.value;
-      await wallet.createReplacementTransaction(tx, RANDOM_SEED);
+      const id = await wallet.createReplacementTransaction(tx, RANDOM_SEED);
       const after = wallet.balance.value;
       assert.equal(before - after, 548n);
       assert.equal(after, 11_0000_0452n);
+      assert.equal(id, '123456');
     });
 
     it('replace tx without change', async () => {
       const tx = txs[1];
       const before = wallet.balance.value;
-      await wallet.createReplacementTransaction(tx, RANDOM_SEED);
+      const id = await wallet.createReplacementTransaction(tx, RANDOM_SEED);
       const after = wallet.balance.value;
       assert.equal(before - after, 2840n);
       assert.equal(after, 10_9999_8160n);
+      assert.equal(id, '123456');
     });
   });
 
