@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 import sinon from 'sinon';
 
-import Wallet from '../index.js';
+import Wallet from '@coinspace/cs-bitcoin-wallet';
 
-async function createWallet(RANDOM_SEED, options, unspentOptions = []) {
-  const request = sinon.stub(options.account, 'request');
+export async function createWallet(RANDOM_SEED, options, unspentOptions = []) {
+  const request = sinon.stub(options, 'request');
 
   const unspents = unspentOptions.map((option) => addressUnspent(option));
   const unspentAddresses = [...new Set(unspents.map((item) => item.address))];
@@ -30,12 +30,10 @@ async function createWallet(RANDOM_SEED, options, unspentOptions = []) {
   await wallet.create(RANDOM_SEED);
   await wallet.load();
 
-  request.restore();
   return wallet;
 }
 
-
-function addressUnspent(options) {
+export function addressUnspent(options) {
   return {
     address: options.address,
     txid: options.txid ?? crypto.randomBytes(32).toString('hex'),
@@ -45,7 +43,7 @@ function addressUnspent(options) {
   };
 }
 
-function addressInfo(address, unspents) {
+export function addressInfo(address, unspents) {
   const utxosConfirmed = unspents.filter((item) => item.address === address && item.confirmations > 0);
   const utxosUnconfirmed = unspents.filter((item) => item.address === address && item.confirmations === 0);
   const txApperances = new Set(utxosConfirmed.map((item) => item.txid));
@@ -60,7 +58,7 @@ function addressInfo(address, unspents) {
   };
 }
 
-function stubUnspents(request, unspentOptions) {
+export function stubUnspents(request, unspentOptions) {
   const unspents = unspentOptions.map((option) => addressUnspent(option));
   const regex = new RegExp('api/v1/addrs/([\\w,]+)/utxo$');
   request.withArgs(sinon.match((value) => {
@@ -73,7 +71,7 @@ function stubUnspents(request, unspentOptions) {
   });
 }
 
-function stubCsFee(request, cryptoId, csFee) {
+export function stubCsFee(request, cryptoId, csFee) {
   request.withArgs({
     seed: 'device',
     method: 'GET',
@@ -82,7 +80,7 @@ function stubCsFee(request, cryptoId, csFee) {
   }).resolves(csFee);
 }
 
-function stubSendTx(request, txId = '123456') {
+export function stubSendTx(request, txId = '123456') {
   request.withArgs({
     seed: 'device',
     method: 'POST',
@@ -92,7 +90,7 @@ function stubSendTx(request, txId = '123456') {
   }).resolves({ txId });
 }
 
-function stubTxs(request, txs) {
+export function stubTxs(request, txs) {
   const regexConfirmations = new RegExp('api/v1/txs/([\\w,]+)/confirmations$');
   request.withArgs(sinon.match((value) => {
     return regexConfirmations.test(value?.url);
@@ -118,9 +116,8 @@ function stubTxs(request, txs) {
   });
 }
 
-async function loadFeeRates(wallet, options, feeRates = { default: 1 }) {
-  const request = sinon.stub(options.account, 'request');
-  request.withArgs({
+export async function loadFeeRates(wallet, options, feeRates = { default: 1 }) {
+  options.request.withArgs({
     seed: 'device',
     method: 'GET',
     url: 'api/v4/fees',
@@ -132,10 +129,9 @@ async function loadFeeRates(wallet, options, feeRates = { default: 1 }) {
     };
   }));
   await wallet.loadFeeRates();
-  request.restore();
 }
 
-function txsToUnspentOptions(txs, addresses = []) {
+export function txsToUnspentOptions(txs, addresses = []) {
   const result = [];
   txs.forEach((tx) => {
     tx.vin.forEach((input) => {
@@ -166,7 +162,7 @@ function txsToUnspentOptions(txs, addresses = []) {
   return result;
 }
 
-async function loadAllTxs(wallet) {
+export async function loadAllTxs(wallet) {
   let result = {};
   const txs = [];
   do {
@@ -175,14 +171,3 @@ async function loadAllTxs(wallet) {
   } while (result.hasMore);
   return txs;
 }
-
-export default {
-  createWallet,
-  stubUnspents,
-  stubCsFee,
-  stubSendTx,
-  stubTxs,
-  loadFeeRates,
-  txsToUnspentOptions,
-  loadAllTxs,
-};

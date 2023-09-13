@@ -23,12 +23,7 @@ const defaultOptions = {
   platform: bitcoinAtBitcoin,
   cache: { get() {}, set() {} },
   settings: { get() {}, set() {} },
-  account: {
-    request(...args) { console.log(args); },
-    market: {
-      getPrice() { return 27415.24; },
-    },
-  },
+  request(...args) { console.log(args); },
   apiNode: 'node',
   storage: { get() {}, set() {}, save() {} },
   development: true,
