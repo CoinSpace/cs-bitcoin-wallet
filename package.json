@@ -1,6 +1,6 @@
 {
   "name": "@coinspace/cs-bitcoin-wallet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bitcoin Wallet for Coin Wallet",
   "author": "Coin Wallet <support@coin.space> (https://coin.space/)",
   "license": "MIT",
