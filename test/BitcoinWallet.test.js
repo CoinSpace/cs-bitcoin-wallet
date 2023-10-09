@@ -421,8 +421,9 @@ describe('BitcoinWallet.js', () => {
     });
 
     it('throw error on empty private key', async () => {
-      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions);
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, []);
       await utils.loadFeeRates(wallet, defaultOptions);
+      utils.stubCsFee(defaultOptions.request, bitcoinAtBitcoin._id, CS_FEE);
       utils.stubUnspents(defaultOptions.request, []);
       await assert.rejects(async () => {
         await wallet.estimateImport({
@@ -433,6 +434,27 @@ describe('BitcoinWallet.js', () => {
       }, {
         name: 'SmallAmountError',
         message: 'Small amount',
+        amount: new Amount(3632n, wallet.crypto.decimals),
+      });
+    });
+
+    it('throw error on private key with small amount', async () => {
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, []);
+      await utils.loadFeeRates(wallet, defaultOptions);
+      utils.stubCsFee(defaultOptions.request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubUnspents(defaultOptions.request, [
+        { address: '2NAUYAHhujozruyzpsFRP63mbrdaU5wnEpN', satoshis: 600 },
+      ]);
+      await assert.rejects(async () => {
+        await wallet.estimateImport({
+          privateKey: 'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA',
+          feeRate: Wallet.FEE_RATE_DEFAULT,
+          price: COIN_PRICE,
+        });
+      }, {
+        name: 'SmallAmountError',
+        message: 'Small amount',
+        amount: new Amount(3724n, wallet.crypto.decimals),
       });
     });
   });
