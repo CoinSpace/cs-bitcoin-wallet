@@ -181,15 +181,17 @@ describe('BitcoinWallet.js', () => {
   describe('load', () => {
     it('should load wallet', async () => {
       const storage = sinon.mock(defaultOptions.storage);
-      storage.expects('set').once().withArgs('balance', '800000000');
+      storage.expects('set').once().withArgs('balance', '900000000');
       storage.expects('save').once();
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
         { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: 'bcrt1q4qqztfxyyqhc6scx005h4j62xa2skrqta3g3rh', satoshis: 1_0000_0000 },
         { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 5_0000_0000 },
         { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 2_0000_0000 },
       ]);
       assert.equal(wallet.state, Wallet.STATE_LOADED);
-      assert.equal(wallet.balance.value, 8_0000_0000n);
+      assert.equal(wallet.balance.value, 9_0000_0000n);
+      assert.equal(wallet.address, 'bcrt1qq76v3m62vxdllc2jry7n4n2vc5pjz2mx2f5zup');
       storage.verify();
     });
 
