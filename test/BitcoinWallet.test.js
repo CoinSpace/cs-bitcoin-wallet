@@ -1056,6 +1056,7 @@ describe('BitcoinWallet.js', () => {
         method: 'GET',
         url: 'api/v4/domain/address',
         params: { crypto: bitcoinAtBitcoin._id, domain: 'nick.crypto' },
+        headers: sinon.match.object,
       }).rejects();
       const response = await wallet.unalias('nick.crypto');
       assert.equal(response, undefined);

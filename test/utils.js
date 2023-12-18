@@ -22,6 +22,7 @@ export async function createWallet(RANDOM_SEED, options, unspentOptions = []) {
     method: 'GET',
     url: `api/v1/addrs/${unspentAddresses.join(',')}/utxo`,
     baseURL: 'node',
+    headers: sinon.match.object,
   }).resolves(unspents.filter((item) => item.satoshis > 0));
 
   const wallet = new Wallet({
@@ -87,6 +88,7 @@ export function stubSendTx(request, txId = '123456') {
     url: 'api/v1/tx/send',
     baseURL: 'node',
     data: sinon.match.any,
+    headers: sinon.match.object,
   }).resolves({ txId });
 }
 
