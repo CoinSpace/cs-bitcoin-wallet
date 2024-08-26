@@ -50,6 +50,14 @@ const bitcoinCashAtBitcoinCash = {
   decimals: 8,
 };
 
+const litecoinAtLitecoin = {
+  _id: 'litecoin@litecoin',
+  asset: 'ltc',
+  platform: 'litecoin',
+  type: 'coin',
+  decimals: 8,
+};
+
 let defaultOptions;
 
 const COIN_PRICE = 27415.24;
@@ -262,6 +270,18 @@ describe('BitcoinWallet.js', () => {
       const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions);
       const privateKey = wallet.getPrivateKey(RANDOM_SEED);
       assert.deepEqual(privateKey, []);
+    });
+  });
+
+  describe('getAddressType', () => {
+    it('works for p2pkh LTC address with "LTC" in the beginning', async () => {
+      const options = {
+        ...defaultOptions,
+        crypto: litecoinAtLitecoin,
+        development: false,
+      };
+      const wallet = await utils.createWallet(RANDOM_SEED, options);
+      assert.equal(wallet.getAddressType('LTCHodBXqzzfDvkL1kA3dHRVsx4SCL3Y13'), Wallet.ADDRESS_TYPE_P2PKH);
     });
   });
 
