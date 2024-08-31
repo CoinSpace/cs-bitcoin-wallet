@@ -6,6 +6,8 @@ import { Amount, Transaction } from '@coinspace/cs-common';
 import * as utils from './utils.js';
 import Wallet from '@coinspace/cs-bitcoin-wallet';
 
+import crypto from "crypto";
+
 // eslint-disable-next-line max-len
 const RANDOM_SEED = Buffer.from('2b48a48a752f6c49772bf97205660411cd2163fe6ce2de19537e9c94d3648c85c0d7f405660c20253115aaf1799b1c41cdd62b4cfbb6845bc9475495fc64b874', 'hex');
 const RANDOM_SEED_PUB_KEY = {
@@ -64,6 +66,14 @@ const COIN_PRICE = 27415.24;
 const CS_FEE_ADDRESS = 'bcrt1qfrl9p7sp00xe8w2nk0krrjpxgventn24msjs7n';
 const CS_FEE = {
   address: CS_FEE_ADDRESS,
+  fee: 0.005,
+  maxFee: 100,
+  minFee: 0.3,
+  feeAddition: 1920,
+};
+const COIN_PRICE_LTC = 65.11;
+const CS_FEE_LTC = {
+  address: 'ltc1qg69a6wprrdagn6ym45qflvrq28hwymf2dpx22s',
   fee: 0.005,
   maxFee: 100,
   minFee: 0.3,
@@ -633,6 +643,42 @@ describe('BitcoinWallet.js', () => {
       }, RANDOM_SEED);
 
       assert.equal(wallet.balance.value, 4963_2908n);
+      assert.equal(id, '123456');
+    });
+
+    it('works for p2pkh LTC address with "LTC" in the beginning (input/output)', async () => {
+      const options = {
+        ...defaultOptions,
+        crypto: litecoinAtLitecoin,
+        development: false,
+      };
+      const address = 'LTCtgXry84LB9rT4GmaPuns6WEHxjRura1';
+      // eslint-disable-next-line max-len
+      const SEED = Buffer.from('c2a39fffc5b29ed84f5af08d7f29968e19f810d9f80718888b46785c55e6193a13b1da3416df7a32009eb3ee849e478f4db2c3fac6c50c4be9f28da140a3cbe9', 'hex');
+      const wallet = await utils.createWallet(SEED, options, [
+        { address, satoshis: 1_0000_0000 },
+      ]);
+
+      await utils.loadFeeRates(wallet, options);
+      utils.stubCsFee(options.request, litecoinAtLitecoin._id, CS_FEE_LTC);
+      utils.stubSendTx(options.request);
+      wallet.addressType = Wallet.ADDRESS_TYPE_P2PKH;
+
+      const maxAmount = await wallet.estimateMaxAmount({
+        address,
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        price: COIN_PRICE_LTC,
+      });
+      assert.equal(maxAmount.value, 9949_7859n);
+
+      const id = await wallet.createTransaction({
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        address,
+        amount: new Amount(5000_0000, wallet.crypto.decimals),
+        price: COIN_PRICE_LTC,
+      }, SEED);
+
+      assert.equal(wallet.balance.value, 9953_7064n);
       assert.equal(id, '123456');
     });
 
