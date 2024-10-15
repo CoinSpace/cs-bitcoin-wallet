@@ -644,6 +644,28 @@ describe('BitcoinWallet.js', () => {
       assert.equal(id, '123456');
     });
 
+    it('works for p2wsh destination', async () => {
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 1_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 1_0000_0000 },
+      ]);
+
+      await utils.loadFeeRates(wallet, defaultOptions);
+      utils.stubCsFee(defaultOptions.request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(defaultOptions.request);
+
+      const id = await wallet.createTransaction({
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        address: SECOND_ADDRESS_P2WSH,
+        amount: new Amount(2_5000_0000, wallet.crypto.decimals),
+        price: COIN_PRICE,
+      }, RANDOM_SEED);
+
+      assert.equal(wallet.balance.value, 4963_2896n);
+      assert.equal(id, '123456');
+    });
+
     it('works for p2pkh LTC address with "LTC" in the beginning (input/output)', async () => {
       const options = {
         ...defaultOptions,
