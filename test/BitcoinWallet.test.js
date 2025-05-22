@@ -1,5 +1,6 @@
 import assert from 'assert/strict';
 import fs from 'fs/promises';
+import { hex } from '@scure/base';
 import sinon from 'sinon';
 import { Amount, Transaction } from '@coinspace/cs-common';
 
@@ -7,7 +8,7 @@ import * as utils from './utils.js';
 import Wallet from '@coinspace/cs-bitcoin-wallet';
 
 // eslint-disable-next-line max-len
-const RANDOM_SEED = Buffer.from('2b48a48a752f6c49772bf97205660411cd2163fe6ce2de19537e9c94d3648c85c0d7f405660c20253115aaf1799b1c41cdd62b4cfbb6845bc9475495fc64b874', 'hex');
+const RANDOM_SEED = hex.decode('2b48a48a752f6c49772bf97205660411cd2163fe6ce2de19537e9c94d3648c85c0d7f405660c20253115aaf1799b1c41cdd62b4cfbb6845bc9475495fc64b874');
 const RANDOM_SEED_PUB_KEY = {
   p2wpkh: {
     // eslint-disable-next-line max-len
@@ -674,7 +675,7 @@ describe('BitcoinWallet.js', () => {
       };
       const address = 'LTCtgXry84LB9rT4GmaPuns6WEHxjRura1';
       // eslint-disable-next-line max-len
-      const SEED = Buffer.from('c2a39fffc5b29ed84f5af08d7f29968e19f810d9f80718888b46785c55e6193a13b1da3416df7a32009eb3ee849e478f4db2c3fac6c50c4be9f28da140a3cbe9', 'hex');
+      const SEED = hex.decode('c2a39fffc5b29ed84f5af08d7f29968e19f810d9f80718888b46785c55e6193a13b1da3416df7a32009eb3ee849e478f4db2c3fac6c50c4be9f28da140a3cbe9');
       const wallet = await utils.createWallet(SEED, options, [
         { address, satoshis: 1_0000_0000 },
       ]);
