@@ -122,7 +122,7 @@ export async function loadFeeRates(wallet, options, feeRates = { default: 1 }) {
   options.request.withArgs({
     seed: 'device',
     method: 'GET',
-    url: 'api/v4/fees',
+    url: 'api/v4/fees/float',
     params: { crypto: options.crypto._id },
   }).resolves(Object.keys(feeRates).map((key) => {
     return {

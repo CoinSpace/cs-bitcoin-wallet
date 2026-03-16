@@ -32,6 +32,7 @@ const SECOND_ADDRESS_P2PKH = 'mtHcCKvxPXL6XLXQsvbZ9Cv7ShdAWz7eid';
 const SECOND_ADDRESS_P2SH = '2NERD15JAX3tMguSDEdpbU79JJR8rLKmQT1';
 const SECOND_ADDRESS_P2WPKH = 'bcrt1qcgrm42khvjl829x0y43y0ua9w28srdksnhtte6';
 const SECOND_ADDRESS_P2WSH = 'bcrt1qhxtthndg70cthfasy8y4qlk9h7r3006azn9md0fad5dg9hh76nkq8d46nh';
+const SECOND_ADDRESS_P2TR = 'bcrt1p4zyqxr3kpactwm8gyjxsghrzwm8rmsq354lt249pdazk0hnpn7pq8gmdje';
 
 const TRANSACTIONS = JSON.parse(await fs.readFile('./test/fixtures/transactions.json'));
 
@@ -667,6 +668,28 @@ describe('BitcoinWallet.js', () => {
       assert.equal(id, '123456');
     });
 
+    it('works for p2tr destination', async () => {
+      const wallet = await utils.createWallet(RANDOM_SEED, defaultOptions, [
+        { address: 'bcrt1q5ud5zsng5k47n2ndvlavtm0zswdkf8j6r4qglp', satoshis: 1_0000_0000 },
+        { address: '2Mxn69GNwjnu2UedKPoMNUrkGFH5CtW3dxF', satoshis: 1_0000_0000 },
+        { address: 'mpRkCswzPqyiamEPbBkEen1zWjUFEh5Hrs', satoshis: 1_0000_0000 },
+      ]);
+
+      await utils.loadFeeRates(wallet, defaultOptions);
+      utils.stubCsFee(defaultOptions.request, bitcoinAtBitcoin._id, CS_FEE);
+      utils.stubSendTx(defaultOptions.request);
+
+      const id = await wallet.createTransaction({
+        feeRate: Wallet.FEE_RATE_DEFAULT,
+        address: SECOND_ADDRESS_P2TR,
+        amount: new Amount(2_5000_0000, wallet.crypto.decimals),
+        price: COIN_PRICE,
+      }, RANDOM_SEED);
+
+      assert.equal(wallet.balance.value, 4963_2896n);
+      assert.equal(id, '123456');
+    });
+
     it('works for p2pkh LTC address with "LTC" in the beginning (input/output)', async () => {
       const options = {
         ...defaultOptions,
@@ -1003,19 +1026,19 @@ describe('BitcoinWallet.js', () => {
     it('works', async () => {
       const estimate = await wallet.estimateReplacement(txs[0]);
       assert.equal(estimate.percent, 0.5);
-      assert.equal(estimate.fee.value, 548n);
+      assert.equal(estimate.fee.value, 499n);
     });
 
     it('works for tx without change', async () => {
       const estimate = await wallet.estimateReplacement(txs[1]);
       assert.equal(estimate.percent, 0.5);
-      assert.equal(estimate.fee.value, 2840n);
+      assert.equal(estimate.fee.value, 2402n);
     });
 
     it('works for tx with small change', async () => {
       const estimate = await wallet.estimateReplacement(txs[2]);
       assert.equal(estimate.percent, 0.5);
-      assert.equal(estimate.fee.value, 1880n);
+      assert.equal(estimate.fee.value, 1788n);
     });
 
     it('throw error not enough funds', async () => {
@@ -1051,8 +1074,8 @@ describe('BitcoinWallet.js', () => {
       const before = wallet.balance.value;
       const id = await wallet.createReplacementTransaction(tx, RANDOM_SEED);
       const after = wallet.balance.value;
-      assert.equal(before - after, 548n);
-      assert.equal(after, 11_0000_0452n);
+      assert.equal(before - after, 499n);
+      assert.equal(after, 11_0000_0501n);
       assert.equal(id, '123456');
     });
 
@@ -1061,8 +1084,8 @@ describe('BitcoinWallet.js', () => {
       const before = wallet.balance.value;
       const id = await wallet.createReplacementTransaction(tx, RANDOM_SEED);
       const after = wallet.balance.value;
-      assert.equal(before - after, 2840n);
-      assert.equal(after, 10_9999_8160n);
+      assert.equal(before - after, 2402n);
+      assert.equal(after, 10_9999_8598n);
       assert.equal(id, '123456');
     });
   });
