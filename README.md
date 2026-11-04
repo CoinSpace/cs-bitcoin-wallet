@@ -11,3 +11,4 @@ Supported forks:
 - Dash
 - Dogecoin
 - Litecoin
+- Zcash
